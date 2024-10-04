@@ -61,3 +61,26 @@ def update_bodies(bodies, dt):
         body.v = np.vstack((body.v, new_v))
         # Set the current acceleration to the newly calculated one
         body.a = np.vstack((body.a, new_a))
+
+def orthogonal_unit_vector(v):
+    # Ensure the input is a numpy array
+    v = np.array(v)
+    
+    # Check the dimension of the vector
+    if len(v) != 3:
+        raise ValueError("This method only works for 3-dimensional vectors.")
+    
+    # Choose a random vector that is not parallel to v
+    # A good strategy is to pick a vector with one element different from v's elements.
+    if np.allclose(v, [1, 0, 0]):
+        random_vec = np.array([0, 1, 0])  # If v is along x-axis, choose y-axis
+    else:
+        random_vec = np.array([1, 0, 0])  # Default random vector
+    
+    # Compute the cross product (gives a vector orthogonal to both v and random_vec)
+    orthogonal_vec = np.cross(v, random_vec)
+    
+    # Normalize the orthogonal vector to make it a unit vector
+    orthogonal_unit_vec = orthogonal_vec / np.linalg.norm(orthogonal_vec)
+    
+    return orthogonal_unit_vec
