@@ -1,4 +1,45 @@
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import numpy as np
+
+def plot_radius(bodies):
+    """
+    Plot the radius (distance from the Sun) of each body in separate subplots.
+    
+    Parameters:
+    bodies (list): List of Body objects containing positions and velocities of solar system bodies.
+    """
+    # Number of bodies to plot
+    num_bodies = len(bodies)
+    
+    # Create subplots: one row for each body
+    fig = make_subplots(rows=num_bodies, cols=1, shared_xaxes=True,
+                        subplot_titles=[body.name for body in bodies])
+    
+    # Time array (assuming the length of the position history is the same for all bodies)
+    time = np.arange(len(bodies[0].x))
+    
+    for i, body in enumerate(bodies):
+        # Calculate the radius for each body over time (Euclidean norm)
+        radius = np.linalg.norm(body.x, axis=1)
+        
+        # Create a trace for the current body
+        trace = go.Scatter(x=time, y=radius, mode='lines', name=body.name)
+        
+        # Add the trace to the subplot (one plot per body)
+        fig.add_trace(trace, row=i+1, col=1)
+    
+    # Update layout: you can customize this layout to fit your needs
+    fig.update_layout(
+        height=300 * num_bodies,  # Height scaling with number of subplots
+        title_text="Radius of Bodies from the Sun Over Time",
+        xaxis_title="Time (arbitrary units)",
+        yaxis_title="Radius (m)",
+        showlegend=False
+    )
+    
+    # Show the plot
+    fig.show()
 
 # Example: Sun-Earth system
 def plot_bodies_animated(bodies):

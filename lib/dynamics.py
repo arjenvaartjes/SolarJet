@@ -39,6 +39,27 @@ class Body():
 
         self.a = np.vstack((self.a, self.force / self.mass))
 
+class Jet(Body):
+    def __init__(self, name, x, v, mass):
+        # Initialize the jet using the Body constructor
+        super().__init__(name, x, v, mass)
+        self.thrust_history = []  # Store the thrust over time for tracking
+
+    def apply_thrust(self, thrust_vector, dt):
+        """
+        Apply thrust to the jet, modifying its velocity.
+
+        Parameters:
+        thrust_vector (array-like): The thrust force applied to the jet.
+        dt (float): The time step over which thrust is applied.
+        """
+        # Convert thrust into acceleration: F = ma -> a = F/m
+        acceleration = np.array(thrust_vector) / self.mass
+        # Update velocity: v = v + a * dt
+        self.velocity += acceleration * dt
+        self.thrust_history.append(thrust_vector)
+
+
 def update_bodies(bodies, dt):
     """Updates the current acceleration, velocity, and position of the bodies using Velocity Verlet method."""
     for body in bodies:

@@ -6,6 +6,7 @@ from astropy.time import Time, TimeDelta
 import astropy.units as u
 from astropy.coordinates import get_body
 
+
 # Define the list of planets
 planets = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune']
 
@@ -59,12 +60,4 @@ neptune = Body("Neptune", x=np.array(coordinates["neptune"]), v=np.array(velocit
 
 
 bodies = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune]
-dt = 10*86400  # 10x one day in seconds
-time = np.arange(0, 10*365*24*3600, dt)  # simulate ten years
-
-# Update the positions of all bodies over time
-for i, t in enumerate(time):
-    update_bodies(bodies, dt)
-
-plot_bodies_animated(bodies)
 
