@@ -3,7 +3,7 @@
 SolarJet is a Python-based simulation project that models planetary dynamics in the Solar System and introduces an intriguing addition: a high-speed jet flying through space! 
 Built with scientific accuracy, SolarJet provides an interactive way to explore celestial mechanics and visualize orbital trajectories.
 
-**Features**
+**Features:**
 
 🌍 **Realistic Solar System Model:** Simulates the gravitational interactions between solar system bodies using astronomical data.
 
@@ -13,10 +13,3 @@ Built with scientific accuracy, SolarJet provides an interactive way to explore 
 
 📈 **Dynamic Visualization:** Plots trajectories and provides an interactive view of the system's evolution.
 
-**Technologies Used**
-
-**Python:** Core programming language for simulation and analysis.
-
-**AstroPy:** For precise astronomical calculations and unit conversions.
-
-**Matplotlib:** For generating visualizations of the Solar System and the jet's path.
