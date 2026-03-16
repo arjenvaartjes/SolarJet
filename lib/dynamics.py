@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from astropy.constants import R_earth
+from planets import *
 
 class Body():
     """Defines a body with position x, velocity v, mass m, and acceleration a."""
@@ -39,49 +41,52 @@ class Body():
 
         self.a = np.vstack((self.a, self.force / self.mass))
 
+
 class Jet(Body):
     def __init__(self, name, x, v, mass):
-        # Initialize the jet using the Body constructor
         super().__init__(name, x, v, mass)
-        self.thrust_history = []  # Store the thrust over time for tracking
+        self.thrust_history = []
 
-    def apply_thrust(self, thrust_vector, dt):
-        """
-        Apply thrust to the jet, modifying its velocity.
-
-        Parameters:
-        thrust_vector (array-like): The thrust force applied to the jet.
-        dt (float): The time step over which thrust is applied.
-        """
-        # Convert thrust into acceleration: F = ma -> a = F/m
-        acceleration = np.array(thrust_vector) / self.mass
-        # Update velocity: v = v + a * dt
-        self.velocity += acceleration * dt
+    def apply_thrust(self, thrust_vector):
+        self.force += thrust_vector
         self.thrust_history.append(thrust_vector)
 
+    def enforce_surface_constraint(self, planet):
+        """
+        Prevent the jet from collapsing into the planet's center by enforcing
+        a minimum distance equal to the planet's radius.
+        """
+        r_vec = self.x[-1] - planet.x[-1]
+        r_mag = np.linalg.norm(r_vec)
+        if r_mag < R_earth.value:
+            # Project the jet back to the Earth's surface
+            self.x[-1] = planet.x[-1] + r_vec / r_mag * R_earth.value
+            self.v[-1] = np.zeros(3)  # Optionally reset velocity to zero
 
-def update_bodies(bodies, dt):
-    """Updates the current acceleration, velocity, and position of the bodies using Velocity Verlet method."""
+def update_bodies(bodies, dt, earth):
     for body in bodies:
         body.calculate_force(bodies)
+        if isinstance(body, Jet):
+            body.apply_thrust([0, 0, 0])
         body.update_acceleration()
 
     for body in bodies:
-        # Update positions and add to body.x
         new_x = body.x[-1] + body.v[-1] * dt + 0.5 * body.a[-1] * dt**2
         body.x = np.vstack((body.x, new_x))
 
     for body in bodies:
-        body.calculate_force(bodies)  # Recalculate forces after position update
+        body.calculate_force(bodies)
 
     for body in bodies:
-        # Update accelerations with new forces
         new_a = body.force / body.mass
-        # Update velocities
         new_v = body.v[-1] + 0.5 * (body.a[-1] + new_a) * dt
         body.v = np.vstack((body.v, new_v))
-        # Set the current acceleration to the newly calculated one
         body.a = np.vstack((body.a, new_a))
+
+    # Enforce surface constraint for jets
+    for body in bodies:
+        if isinstance(body, Jet):
+            body.enforce_surface_constraint(earth)
 
 def orthogonal_unit_vector(v):
     # Ensure the input is a numpy array
